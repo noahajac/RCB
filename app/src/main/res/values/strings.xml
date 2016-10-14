@@ -6,6 +6,8 @@
 
     <!-- Strings for Settings-->
     <string name="pref_header_general">General</string>
-    <string name="su_binary_name">SU Binary Path</string>
+    <string name="su_binary_name">SU Binary Name</string>
     <string name="su_binary_name_value">su</string>
+    <string name="disabled_su_binary_name">Disabled SU Binary Name</string>
+    <string name="disabled_su_binary_name_value">su.disabled</string>
 </resources>

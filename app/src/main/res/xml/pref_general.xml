@@ -1,12 +1,21 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <EditTextPreference
-        android:defaultValue="@string/su_binary_name_value"
+    android:defaultValue="@string/su_binary_name_value"
+    android:inputType="text"
+    android:key="su_binary_name"
+    android:maxLines="1"
+    android:selectAllOnFocus="true"
+    android:singleLine="true"
+    android:title="@string/su_binary_name" />
+
+    <EditTextPreference
+        android:defaultValue="@string/disabled_su_binary_name_value"
         android:inputType="text"
-        android:key="su_binary_name"
+        android:key="su_disabled_binary_name"
         android:maxLines="1"
         android:selectAllOnFocus="true"
         android:singleLine="true"
-        android:title="@string/su_binary_name" />
+        android:title="@string/disabled_su_binary_name" />
 
 </PreferenceScreen>
