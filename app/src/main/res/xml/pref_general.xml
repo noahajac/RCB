@@ -18,4 +18,8 @@
         android:singleLine="true"
         android:title="@string/disabled_su_binary_name" />
 
+    <Preference
+        android:title="@string/reset_settings"
+        android:key="reset_settings" />
+
 </PreferenceScreen>

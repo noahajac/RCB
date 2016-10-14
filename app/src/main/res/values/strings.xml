@@ -10,4 +10,9 @@
     <string name="su_binary_name_value">su</string>
     <string name="disabled_su_binary_name">Disabled SU Binary Name</string>
     <string name="disabled_su_binary_name_value">su.disabled</string>
+    <string name="reset_settings">Reset Settings to Default</string>
+    <string name="reset_settings_dialog_message">Are you sure you want to reset settings to default?</string>
+    <string name="reset_settings_dialog_title">Reset Settings to Default</string>
+    <string name="reset_settings_dialog_positive_button">Reset</string>
+    <string name="reset_settings_dialog_negative_button">Cancel</string>
 </resources>

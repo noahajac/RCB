@@ -1,7 +1,12 @@
 package com.noahjacobson.rcb;
 
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -24,6 +29,8 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 
 import java.util.List;
+
+import static android.app.ProgressDialog.show;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -103,11 +110,31 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         return PreferenceFragment.class.getName().equals(fragmentName)
                 || GeneralPreferenceFragment.class.getName().equals(fragmentName);
     }
-
+   public static class ResetSettingsDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage(R.string.reset_settings_dialog_message)
+                    .setTitle(R.string.reset_settings_dialog_title)
+                    .setPositiveButton(R.string.reset_settings_dialog_positive_button, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // Placeholder
+                        }
+                    })
+                    .setNegativeButton(R.string.reset_settings_dialog_negative_button, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                        }
+                    });
+            // Create the AlertDialog object and return it
+            return builder.create();
+        }
+    }
     /**
      * This fragment shows general preferences only. It is used when the
      * activity is showing a two-pane settings UI.
      */
+
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class GeneralPreferenceFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
         @Override
@@ -117,6 +144,17 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             PreferenceManager.setDefaultValues(getContext(), R.xml.pref_general,
                     false);
             initSummary(getPreferenceScreen());
+
+            Preference resetSettings = (Preference)findPreference("reset_settings");
+            resetSettings.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    FragmentManager fragmentManager = getActivity().getFragmentManager();
+                    DialogFragment resetPopup = new ResetSettingsDialogFragment();
+                    resetPopup.show(fragmentManager, "settingsResetDialog");
+                    return true;
+                }
+            });
         }
 
         @Override
@@ -188,5 +226,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             return super.onOptionsItemSelected(item);
         }
     }
+
 
 }
