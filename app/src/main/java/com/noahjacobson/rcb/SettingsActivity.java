@@ -28,6 +28,8 @@ import android.preference.RingtonePreference;
 import android.text.TextUtils;
 import android.view.MenuItem;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 import static android.app.ProgressDialog.show;
@@ -144,6 +146,40 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             PreferenceManager.setDefaultValues(getContext(), R.xml.pref_general,
                     false);
             initSummary(getPreferenceScreen());
+
+            Preference requestRoot = (Preference)findPreference("request_root");
+            requestRoot.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    int root;
+                    try {
+                        Process rootProcess = Runtime.getRuntime().exec("su");
+                        DataOutputStream rootStream = new DataOutputStream(rootProcess.getOutputStream());
+
+                        // Close the terminal
+                        rootStream.writeBytes("exit\n");
+                        rootStream.flush();
+                        try {
+                            rootProcess.waitFor();
+                            if (rootProcess.exitValue() != 255) {
+                                // Code to run on success
+                                // Placeholder
+                            }
+                            else {
+                                // Code to run on unsuccessful
+                                // Placeholder
+                            }
+                        } catch (InterruptedException e) {
+                            // Code to run in interrupted exception
+                            // Placeholder
+                        }
+                    } catch (IOException e) {
+                        // Code to run in input/output exception
+                        // Placeholder
+                    }
+                    return true;
+                }
+            });
 
             Preference resetSettings = (Preference)findPreference("reset_settings");
             resetSettings.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
