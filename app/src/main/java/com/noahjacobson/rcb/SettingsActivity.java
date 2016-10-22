@@ -10,9 +10,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
@@ -24,16 +21,12 @@ import android.preference.PreferenceGroup;
 import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.preference.RingtonePreference;
-import android.text.TextUtils;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
-
-import static android.app.ProgressDialog.show;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
