@@ -27,6 +27,7 @@ import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -153,7 +154,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 public boolean onPreferenceClick(Preference preference) {
                     int root;
                     try {
-                        Process rootProcess = Runtime.getRuntime().exec("su");
+                        Process rootProcess = Runtime.getRuntime().exec("/system/xbin/su");
                         DataOutputStream rootStream = new DataOutputStream(rootProcess.getOutputStream());
 
                         // Close the terminal
@@ -161,21 +162,21 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         rootStream.flush();
                         try {
                             rootProcess.waitFor();
-                            if (rootProcess.exitValue() != 255) {
-                                // Code to run on success
-                                // Placeholder
+                            if (rootProcess.exitValue() == 0) {
+                                Toast rootCheckToastSuccessful = Toast.makeText(getActivity().getApplication(), "Root Request Accepted", Toast.LENGTH_SHORT);
+                                rootCheckToastSuccessful.show();
                             }
                             else {
-                                // Code to run on unsuccessful
-                                // Placeholder
+                                Toast rootCheckToastSuccessful = Toast.makeText(getActivity().getApplication(), "Root Request Denied", Toast.LENGTH_SHORT);
+                                rootCheckToastSuccessful.show();
                             }
                         } catch (InterruptedException e) {
-                            // Code to run in interrupted exception
-                            // Placeholder
+                            Toast rootCheckToastSuccessful = Toast.makeText(getActivity().getApplication(), "Error: " + e, Toast.LENGTH_SHORT);
+                            rootCheckToastSuccessful.show();
                         }
                     } catch (IOException e) {
-                        // Code to run in input/output exception
-                        // Placeholder
+                        Toast rootCheckToastSuccessful = Toast.makeText(getActivity().getApplication(), "Unable to Find SU", Toast.LENGTH_SHORT);
+                        rootCheckToastSuccessful.show();
                     }
                     return true;
                 }
