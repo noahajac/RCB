@@ -122,7 +122,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     .setTitle(R.string.reset_settings_dialog_title)
                     .setPositiveButton(R.string.reset_settings_dialog_positive_button, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            // Placeholder
+                            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                            SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+                            sharedPreferencesEditor.clear();
+                            sharedPreferencesEditor.commit();
+                            getActivity().finish();
+                            Toast settingsResetToast = Toast.makeText(getActivity().getApplication(), "Settings Reset to Default", Toast.LENGTH_SHORT);
+                            settingsResetToast.show();
                         }
                     })
                     .setNegativeButton(R.string.reset_settings_dialog_negative_button, new DialogInterface.OnClickListener() {
@@ -163,20 +169,20 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         try {
                             rootProcess.waitFor();
                             if (rootProcess.exitValue() == 0) {
-                                Toast rootCheckToastSuccessful = Toast.makeText(getActivity().getApplication(), "Root Request Accepted", Toast.LENGTH_SHORT);
-                                rootCheckToastSuccessful.show();
+                                Toast rootCheckSuccessfulToast = Toast.makeText(getActivity().getApplication(), "Root Request Accepted", Toast.LENGTH_SHORT);
+                                rootCheckSuccessfulToast.show();
                             }
                             else {
-                                Toast rootCheckToastSuccessful = Toast.makeText(getActivity().getApplication(), "Root Request Denied", Toast.LENGTH_SHORT);
-                                rootCheckToastSuccessful.show();
+                                Toast rootCheckUnsuccessfulToast = Toast.makeText(getActivity().getApplication(), "Root Request Denied", Toast.LENGTH_SHORT);
+                                rootCheckUnsuccessfulToast.show();
                             }
                         } catch (InterruptedException e) {
-                            Toast rootCheckToastSuccessful = Toast.makeText(getActivity().getApplication(), "Error: " + e, Toast.LENGTH_SHORT);
-                            rootCheckToastSuccessful.show();
+                            Toast rootCheckUnsuccessfulToast = Toast.makeText(getActivity().getApplication(), "Error: " + e, Toast.LENGTH_SHORT);
+                            rootCheckUnsuccessfulToast.show();
                         }
                     } catch (IOException e) {
-                        Toast rootCheckToastSuccessful = Toast.makeText(getActivity().getApplication(), "Unable to Find SU", Toast.LENGTH_SHORT);
-                        rootCheckToastSuccessful.show();
+                        Toast rootCheckUnsuccessfulToast = Toast.makeText(getActivity().getApplication(), "Unable to Find SU", Toast.LENGTH_SHORT);
+                        rootCheckUnsuccessfulToast.show();
                     }
                     return true;
                 }
