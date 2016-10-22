@@ -1,6 +1,8 @@
 package com.noahjacobson.rcb;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -15,6 +17,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+        String suBinaryName = sharedPreferences.getString("su_binary_name", "su");
+        String suDisabledBinaryName = sharedPreferences.getString("su_disabled_binary_name", "su.disabled");
     }
 
     @Override
@@ -42,4 +47,5 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
 }
