@@ -151,7 +151,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             requestRoot.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    int root;
                     try {
                         Process rootProcess = Runtime.getRuntime().exec("/system/xbin/su");
                         DataOutputStream rootStream = new DataOutputStream(rootProcess.getOutputStream());

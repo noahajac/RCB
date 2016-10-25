@@ -8,6 +8,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
+
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,11 +23,55 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
-        String suBinaryName = sharedPreferences.getString("su_binary_name", "su");
-        String suDisabledBinaryName = sharedPreferences.getString("su_disabled_binary_name", "su.disabled");
+        Button disableRootButton = (Button) findViewById(R.id.disable_root);
+        Button enableRootButton = (Button) findViewById(R.id.enable_root);
+        disableRootButton.setOnClickListener(disableRoot);
+        enableRootButton.setOnClickListener(enableRoot);
     }
+    private View.OnClickListener disableRoot = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            try {
+                SharedPreferences sharedPreferences = MainActivity.this.getPreferences(Context.MODE_PRIVATE);
+                String suBinaryName = sharedPreferences.getString("su_binary_name", "su");
+                String suDisabledBinaryName = sharedPreferences.getString("su_disabled_binary_name", "su.disabled");
+                Process rootProcess = Runtime.getRuntime().exec("/system/xbin/" + suBinaryName);
+                DataOutputStream rootStream = new DataOutputStream(rootProcess.getOutputStream());
+                rootStream.writeBytes("mount -o rw,remount,rw /system\n");
+                rootStream.writeBytes("mv /system/bin/" + suBinaryName + " /system/bin/" + suDisabledBinaryName + "\n");
+                rootStream.writeBytes("mv /system/xbin/" + suBinaryName + " /system/xbin/" + suDisabledBinaryName + "\n");
+                rootStream.writeBytes("mount -o ro,remount,ro /system\n");
+                // Close the terminal
+                rootStream.writeBytes("exit\n");
+                rootStream.flush();
 
+            } catch (IOException e) {
+
+            }
+        }
+    };
+    private View.OnClickListener enableRoot = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            try {
+                SharedPreferences sharedPreferences = MainActivity.this.getPreferences(Context.MODE_PRIVATE);
+                String suBinaryName = sharedPreferences.getString("su_binary_name", "su");
+                String suDisabledBinaryName = sharedPreferences.getString("su_disabled_binary_name", "su.disabled");
+                Process rootProcess = Runtime.getRuntime().exec("/system/xbin/" + suDisabledBinaryName);
+                DataOutputStream rootStream = new DataOutputStream(rootProcess.getOutputStream());
+                rootStream.writeBytes("mount -o rw,remount,rw /system\n");
+                rootStream.writeBytes("mv /system/xbin/" + suDisabledBinaryName + " /system/xbin/" + suBinaryName + "\n");
+                rootStream.writeBytes("mv /system/bin/" + suDisabledBinaryName + " /system/bin/" + suBinaryName + "\n");
+                rootStream.writeBytes("mount -o ro,remount,ro /system\n");
+                // Close the terminal
+                rootStream.writeBytes("exit\n");
+                rootStream.flush();
+
+            } catch (IOException e) {
+
+            }
+        }
+    };
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
