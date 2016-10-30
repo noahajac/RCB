@@ -30,8 +30,28 @@ public class MainActivity extends AppCompatActivity {
         enableRootButton.setOnClickListener(enableRoot);
     }
 
-    public boolean rootCheck() {
-        File suEnabled = new File("/system/bin/su");
+    public void rootStatusCheck(boolean suFound) {
+        SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+        String suBinaryName = sharedPreferences.getString("su_binary_name", "su");
+        String suDisabledBinaryName = sharedPreferences.getString("su_disabled_binary_name", "su.disabled");
+        if(suFound) {
+            File suEnabled = new File("/system/bin/" + suBinaryName);
+            File suDisabled = new File("/system/bin/" + suDisabledBinaryName);
+            if (suEnabled.exists()) {
+                sharedPreferencesEditor.putBoolean("rootEnabled", true);
+                sharedPreferencesEditor.commit();
+            }else if(suDisabled.exists()) {
+                sharedPreferencesEditor.putBoolean("rootEnabled", false);
+                sharedPreferencesEditor.commit();
+            }
+        }
+    }
+    public boolean rootExistCheck() {
+        SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+        String suBinaryName = sharedPreferences.getString("su_binary_name", "su");
+        String suDisabledBinaryName = sharedPreferences.getString("su_disabled_binary_name", "su.disabled");
+        File suEnabled = new File("/system/bin/" + suBinaryName);
         boolean suEnabledFound;
         if (suEnabled.exists()) {
             suEnabledFound = true;
@@ -39,16 +59,21 @@ public class MainActivity extends AppCompatActivity {
             suEnabledFound = false;
         }
 
-        File suDisabled = new File("/system/bin/su.disabled");
+        File suDisabled = new File("/system/bin/" + suDisabledBinaryName);
         boolean suDisabledFound;
         if (suDisabled.exists()) {
             suDisabledFound = true;
         } else {
             suDisabledFound = false;
         }
+        boolean suFound;
         if(suEnabledFound || suDisabledFound) {
+            suFound = true;
+            rootStatusCheck(suFound);
             return true;
         }else{
+            suFound = false;
+            rootStatusCheck(suFound);
             return false;
         }
     }
