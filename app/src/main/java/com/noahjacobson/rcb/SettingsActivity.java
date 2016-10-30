@@ -151,6 +151,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             requestRoot.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
+                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                    SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
                     try {
                         Process rootProcess = Runtime.getRuntime().exec("/system/xbin/su");
                         DataOutputStream rootStream = new DataOutputStream(rootProcess.getOutputStream());
@@ -161,18 +163,26 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         try {
                             rootProcess.waitFor();
                             if (rootProcess.exitValue() == 0) {
+                                sharedPreferencesEditor.putBoolean("rootAccess", true);
+                                sharedPreferencesEditor.commit();
                                 Toast rootCheckSuccessfulToast = Toast.makeText(getActivity().getApplication(), "Root Request Accepted", Toast.LENGTH_SHORT);
                                 rootCheckSuccessfulToast.show();
                             }
                             else {
+                                sharedPreferencesEditor.putBoolean("rootAccess", false);
+                                sharedPreferencesEditor.commit();
                                 Toast rootCheckUnsuccessfulToast = Toast.makeText(getActivity().getApplication(), "Root Request Denied", Toast.LENGTH_SHORT);
                                 rootCheckUnsuccessfulToast.show();
                             }
                         } catch (InterruptedException e) {
+                            sharedPreferencesEditor.putBoolean("rootAccess", false);
+                            sharedPreferencesEditor.commit();
                             Toast rootCheckUnsuccessfulToast = Toast.makeText(getActivity().getApplication(), "Error: " + e, Toast.LENGTH_SHORT);
                             rootCheckUnsuccessfulToast.show();
                         }
                     } catch (IOException e) {
+                        sharedPreferencesEditor.putBoolean("rootAccess", false);
+                        sharedPreferencesEditor.commit();
                         Toast rootCheckUnsuccessfulToast = Toast.makeText(getActivity().getApplication(), "Unable to Find SU", Toast.LENGTH_SHORT);
                         rootCheckUnsuccessfulToast.show();
                     }
