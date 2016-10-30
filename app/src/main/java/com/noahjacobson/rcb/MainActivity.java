@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
@@ -28,6 +29,30 @@ public class MainActivity extends AppCompatActivity {
         disableRootButton.setOnClickListener(disableRoot);
         enableRootButton.setOnClickListener(enableRoot);
     }
+
+    public boolean rootCheck() {
+        File suEnabled = new File("/system/bin/su");
+        boolean suEnabledFound;
+        if (suEnabled.exists()) {
+            suEnabledFound = true;
+        } else {
+            suEnabledFound = false;
+        }
+
+        File suDisabled = new File("/system/bin/su.disabled");
+        boolean suDisabledFound;
+        if (suDisabled.exists()) {
+            suDisabledFound = true;
+        } else {
+            suDisabledFound = false;
+        }
+        if(suEnabledFound || suDisabledFound) {
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     private View.OnClickListener disableRoot = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
