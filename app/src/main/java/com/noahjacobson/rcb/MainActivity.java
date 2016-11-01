@@ -45,8 +45,8 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
         String suBinaryName = sharedPreferences.getString("su_binary_name", "su");
         String suDisabledBinaryName = sharedPreferences.getString("su_disabled_binary_name", "su.disabled");
-        File suEnabled = new File("/system/bin/" + suBinaryName);
-        File suDisabled = new File("/system/bin/" + suDisabledBinaryName);
+        File suEnabled = new File("/system/xbin/" + suBinaryName);
+        File suDisabled = new File("/system/xbin/" + suDisabledBinaryName);
         if (suEnabled.exists()) {
             sharedPreferencesEditor.putBoolean("rootEnabled", true);
             sharedPreferencesEditor.commit();
@@ -60,7 +60,8 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
         String suBinaryName = sharedPreferences.getString("su_binary_name", "su");
         String suDisabledBinaryName = sharedPreferences.getString("su_disabled_binary_name", "su.disabled");
-        File suEnabled = new File("/system/bin/" + suBinaryName);
+
+        File suEnabled = new File("/system/xbin/" + suBinaryName);
         boolean suEnabledFound;
         if (suEnabled.exists()) {
             suEnabledFound = true;
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
             suEnabledFound = false;
         }
 
-        File suDisabled = new File("/system/bin/" + suDisabledBinaryName);
+        File suDisabled = new File("/system/xbin/" + suDisabledBinaryName);
         boolean suDisabledFound;
         if (suDisabled.exists()) {
             suDisabledFound = true;
@@ -108,10 +109,10 @@ public class MainActivity extends AppCompatActivity {
                     } catch (IOException e) {
 
                     }
+                } else {
+                    Toast rootAlreadyDisabled = Toast.makeText(getApplicationContext(), "Root Already Disabled", Toast.LENGTH_SHORT);
+                    rootAlreadyDisabled.show();
                 }
-            }else{
-                Toast rootAlreadyDisabled = Toast.makeText(getApplicationContext(), "Root Already Disabled", Toast.LENGTH_SHORT);
-                rootAlreadyDisabled.show();
             }
         }
     };
@@ -120,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
             if (rootCheck()) {
                 SharedPreferences sharedPreferences = MainActivity.this.getPreferences(Context.MODE_PRIVATE);
-                if (sharedPreferences.getBoolean("rootEnabled", false)) {
+                if (!sharedPreferences.getBoolean("rootEnabled", true)) {
                     try {
                         String suBinaryName = sharedPreferences.getString("su_binary_name", "su");
                         String suDisabledBinaryName = sharedPreferences.getString("su_disabled_binary_name", "su.disabled");
