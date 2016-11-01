@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean rootAccessCheck() {
         SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
         if(sharedPreferences.getBoolean("rootAccess", true)) {
-            rootAccessCheck();
+            rootStatusCheck();
             return true;
         }else{
             return false;
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public boolean rootExistCheck() {
+    public boolean rootCheck() {
         SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
         String suBinaryName = sharedPreferences.getString("su_binary_name", "su");
         String suDisabledBinaryName = sharedPreferences.getString("su_disabled_binary_name", "su.disabled");
@@ -90,44 +90,56 @@ public class MainActivity extends AppCompatActivity {
     private View.OnClickListener disableRoot = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            try {
+            if (rootCheck()) {
                 SharedPreferences sharedPreferences = MainActivity.this.getPreferences(Context.MODE_PRIVATE);
-                String suBinaryName = sharedPreferences.getString("su_binary_name", "su");
-                String suDisabledBinaryName = sharedPreferences.getString("su_disabled_binary_name", "su.disabled");
-                Process rootProcess = Runtime.getRuntime().exec("/system/xbin/" + suBinaryName);
-                DataOutputStream rootStream = new DataOutputStream(rootProcess.getOutputStream());
-                rootStream.writeBytes("mount -o rw,remount,rw /system\n");
-                rootStream.writeBytes("mv /system/bin/" + suBinaryName + " /system/bin/" + suDisabledBinaryName + "\n");
-                rootStream.writeBytes("mv /system/xbin/" + suBinaryName + " /system/xbin/" + suDisabledBinaryName + "\n");
-                rootStream.writeBytes("mount -o ro,remount,ro /system\n");
-                // Close the terminal
-                rootStream.writeBytes("exit\n");
-                rootStream.flush();
+                if (sharedPreferences.getBoolean("rootEnabled", true)) {
+                    try {
+                        String suBinaryName = sharedPreferences.getString("su_binary_name", "su");
+                        String suDisabledBinaryName = sharedPreferences.getString("su_disabled_binary_name", "su.disabled");
+                        Process rootProcess = Runtime.getRuntime().exec("/system/xbin/" + suBinaryName);
+                        DataOutputStream rootStream = new DataOutputStream(rootProcess.getOutputStream());
+                        rootStream.writeBytes("mount -o rw,remount,rw /system\n");
+                        rootStream.writeBytes("mv /system/bin/" + suBinaryName + " /system/bin/" + suDisabledBinaryName + "\n");
+                        rootStream.writeBytes("mv /system/xbin/" + suBinaryName + " /system/xbin/" + suDisabledBinaryName + "\n");
+                        rootStream.writeBytes("mount -o ro,remount,ro /system\n");
+                        rootStream.writeBytes("exit\n");
+                        rootStream.flush();
 
-            } catch (IOException e) {
+                    } catch (IOException e) {
 
+                    }
+                }
+            }else{
+                Toast rootAlreadyDisabled = Toast.makeText(getApplicationContext(), "Root Already Disabled", Toast.LENGTH_SHORT);
+                rootAlreadyDisabled.show();
             }
         }
     };
     private View.OnClickListener enableRoot = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            try {
+            if (rootCheck()) {
                 SharedPreferences sharedPreferences = MainActivity.this.getPreferences(Context.MODE_PRIVATE);
-                String suBinaryName = sharedPreferences.getString("su_binary_name", "su");
-                String suDisabledBinaryName = sharedPreferences.getString("su_disabled_binary_name", "su.disabled");
-                Process rootProcess = Runtime.getRuntime().exec("/system/xbin/" + suDisabledBinaryName);
-                DataOutputStream rootStream = new DataOutputStream(rootProcess.getOutputStream());
-                rootStream.writeBytes("mount -o rw,remount,rw /system\n");
-                rootStream.writeBytes("mv /system/xbin/" + suDisabledBinaryName + " /system/xbin/" + suBinaryName + "\n");
-                rootStream.writeBytes("mv /system/bin/" + suDisabledBinaryName + " /system/bin/" + suBinaryName + "\n");
-                rootStream.writeBytes("mount -o ro,remount,ro /system\n");
-                // Close the terminal
-                rootStream.writeBytes("exit\n");
-                rootStream.flush();
+                if (sharedPreferences.getBoolean("rootEnabled", false)) {
+                    try {
+                        String suBinaryName = sharedPreferences.getString("su_binary_name", "su");
+                        String suDisabledBinaryName = sharedPreferences.getString("su_disabled_binary_name", "su.disabled");
+                        Process rootProcess = Runtime.getRuntime().exec("/system/xbin/" + suDisabledBinaryName);
+                        DataOutputStream rootStream = new DataOutputStream(rootProcess.getOutputStream());
+                        rootStream.writeBytes("mount -o rw,remount,rw /system\n");
+                        rootStream.writeBytes("mv /system/xbin/" + suDisabledBinaryName + " /system/xbin/" + suBinaryName + "\n");
+                        rootStream.writeBytes("mv /system/bin/" + suDisabledBinaryName + " /system/bin/" + suBinaryName + "\n");
+                        rootStream.writeBytes("mount -o ro,remount,ro /system\n");
+                        rootStream.writeBytes("exit\n");
+                        rootStream.flush();
 
-            } catch (IOException e) {
+                    } catch (IOException e) {
 
+                    }
+                }else{
+                    Toast rootAlreadyEnabled = Toast.makeText(getApplicationContext(), "Root Already Enabled", Toast.LENGTH_SHORT);
+                    rootAlreadyEnabled.show();
+                }
             }
         }
     };

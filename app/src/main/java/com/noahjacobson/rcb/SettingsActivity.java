@@ -145,9 +145,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.pref_general);
             PreferenceManager.setDefaultValues(getContext(), R.xml.pref_general,
                     false);
+            final Preference requestRoot = (Preference)findPreference("request_root");
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            if(sharedPreferences.getBoolean("rootAccess", true)) {
+                requestRoot.setSummary("Has Root Access");
+            }else if(sharedPreferences.getBoolean("rootAccess", false)) {
+                requestRoot.setSummary("Does Not Have Root Access");
+            }
             initSummary(getPreferenceScreen());
 
-            Preference requestRoot = (Preference)findPreference("request_root");
             requestRoot.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
@@ -165,24 +171,28 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                             if (rootProcess.exitValue() == 0) {
                                 sharedPreferencesEditor.putBoolean("rootAccess", true);
                                 sharedPreferencesEditor.commit();
+                                requestRoot.setSummary("Has Root Access");
                                 Toast rootCheckSuccessfulToast = Toast.makeText(getActivity().getApplication(), "Root Request Accepted", Toast.LENGTH_SHORT);
                                 rootCheckSuccessfulToast.show();
                             }
                             else {
                                 sharedPreferencesEditor.putBoolean("rootAccess", false);
                                 sharedPreferencesEditor.commit();
+                                requestRoot.setSummary("Does Not Have Root Access");
                                 Toast rootCheckUnsuccessfulToast = Toast.makeText(getActivity().getApplication(), "Root Request Denied", Toast.LENGTH_SHORT);
                                 rootCheckUnsuccessfulToast.show();
                             }
                         } catch (InterruptedException e) {
                             sharedPreferencesEditor.putBoolean("rootAccess", false);
                             sharedPreferencesEditor.commit();
+                            requestRoot.setSummary("Does Not Have Root Access");
                             Toast rootCheckUnsuccessfulToast = Toast.makeText(getActivity().getApplication(), "Error: " + e, Toast.LENGTH_SHORT);
                             rootCheckUnsuccessfulToast.show();
                         }
                     } catch (IOException e) {
                         sharedPreferencesEditor.putBoolean("rootAccess", false);
                         sharedPreferencesEditor.commit();
+                        requestRoot.setSummary("Does Not Have Root Access");
                         Toast rootCheckUnsuccessfulToast = Toast.makeText(getActivity().getApplication(), "Unable to Find SU", Toast.LENGTH_SHORT);
                         rootCheckUnsuccessfulToast.show();
                     }
