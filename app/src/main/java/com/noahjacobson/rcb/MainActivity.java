@@ -30,6 +30,16 @@ public class MainActivity extends AppCompatActivity {
         enableRootButton.setOnClickListener(enableRoot);
     }
 
+    public boolean rootAccessCheck() {
+        SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+        if(sharedPreferences.getBoolean("rootAccess", true)) {
+            rootAccessCheck();
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     public void rootStatusCheck() {
         SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
@@ -48,28 +58,28 @@ public class MainActivity extends AppCompatActivity {
 
     public boolean rootExistCheck() {
         SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
-        if(sharedPreferences.getBoolean("rootAccess", false)) {
-            String suBinaryName = sharedPreferences.getString("su_binary_name", "su");
-            String suDisabledBinaryName = sharedPreferences.getString("su_disabled_binary_name", "su.disabled");
-            File suEnabled = new File("/system/bin/" + suBinaryName);
-            boolean suEnabledFound;
-            if (suEnabled.exists()) {
-                suEnabledFound = true;
-            } else {
-                suEnabledFound = false;
-            }
+        String suBinaryName = sharedPreferences.getString("su_binary_name", "su");
+        String suDisabledBinaryName = sharedPreferences.getString("su_disabled_binary_name", "su.disabled");
+        File suEnabled = new File("/system/bin/" + suBinaryName);
+        boolean suEnabledFound;
+        if (suEnabled.exists()) {
+            suEnabledFound = true;
+        }else{
+            suEnabledFound = false;
+        }
 
-            File suDisabled = new File("/system/bin/" + suDisabledBinaryName);
-            boolean suDisabledFound;
-            if (suDisabled.exists()) {
-                suDisabledFound = true;
-            } else {
-                suDisabledFound = false;
-            }
-            if (suEnabledFound || suDisabledFound) {
-                rootStatusCheck();
+        File suDisabled = new File("/system/bin/" + suDisabledBinaryName);
+        boolean suDisabledFound;
+        if (suDisabled.exists()) {
+            suDisabledFound = true;
+        }else{
+            suDisabledFound = false;
+        }
+
+        if (suEnabledFound || suDisabledFound) {
+            if(rootAccessCheck()) {
                 return true;
-            } else {
+            }else{
                 return false;
             }
         }else{
