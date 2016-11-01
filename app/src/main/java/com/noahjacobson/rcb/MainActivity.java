@@ -48,26 +48,30 @@ public class MainActivity extends AppCompatActivity {
 
     public boolean rootExistCheck() {
         SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
-        String suBinaryName = sharedPreferences.getString("su_binary_name", "su");
-        String suDisabledBinaryName = sharedPreferences.getString("su_disabled_binary_name", "su.disabled");
-        File suEnabled = new File("/system/bin/" + suBinaryName);
-        boolean suEnabledFound;
-        if (suEnabled.exists()) {
-            suEnabledFound = true;
-        } else {
-            suEnabledFound = false;
-        }
+        if(sharedPreferences.getBoolean("rootAccess", false)) {
+            String suBinaryName = sharedPreferences.getString("su_binary_name", "su");
+            String suDisabledBinaryName = sharedPreferences.getString("su_disabled_binary_name", "su.disabled");
+            File suEnabled = new File("/system/bin/" + suBinaryName);
+            boolean suEnabledFound;
+            if (suEnabled.exists()) {
+                suEnabledFound = true;
+            } else {
+                suEnabledFound = false;
+            }
 
-        File suDisabled = new File("/system/bin/" + suDisabledBinaryName);
-        boolean suDisabledFound;
-        if (suDisabled.exists()) {
-            suDisabledFound = true;
-        } else {
-            suDisabledFound = false;
-        }
-        if(suEnabledFound || suDisabledFound) {
-            rootStatusCheck();
-            return true;
+            File suDisabled = new File("/system/bin/" + suDisabledBinaryName);
+            boolean suDisabledFound;
+            if (suDisabled.exists()) {
+                suDisabledFound = true;
+            } else {
+                suDisabledFound = false;
+            }
+            if (suEnabledFound || suDisabledFound) {
+                rootStatusCheck();
+                return true;
+            } else {
+                return false;
+            }
         }else{
             return false;
         }
