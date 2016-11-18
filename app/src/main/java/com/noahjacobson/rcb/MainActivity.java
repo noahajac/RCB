@@ -26,8 +26,8 @@ public class MainActivity extends AppCompatActivity { // Class for the main acti
         setSupportActionBar(toolbar); // Set toolbar as the action bar.
         Button disableRootButton = (Button) findViewById(R.id.disable_root_button); // Find button to disable root by id.
         Button enableRootButton = (Button) findViewById(R.id.enable_root_button); // Find button to enable root by id.
-        disableRootButton.setOnClickListener(disableRoot); // Set on click listener for disable root button.
-        enableRootButton.setOnClickListener(enableRoot); // Set on click listener for enable root button.
+        disableRootButton.setOnClickListener(disableRootListener); // Set on click listener for disable root button.
+        enableRootButton.setOnClickListener(enableRootListener); // Set on click listener for enable root button.
     }
 
     private void rootStatusCheck() { // Function to check if root is currently enabled or disabled.
@@ -72,24 +72,45 @@ public class MainActivity extends AppCompatActivity { // Class for the main acti
         return (suBinaryEnabledFound || suBinaryDisabledFound) && rootAccessCheck(); // Tell the previous function weather it's safe to check if RCB has root access.
     }
 
-    private final View.OnClickListener disableRoot = new View.OnClickListener() { // On click listener for button to disable root.
+    private void disableRoot() { // Function to disable root.
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()); // Declare variable for shared preferences.
+        String suBinaryName = sharedPreferences.getString("su_binary_name", "su"); // Declare variable for the name of the su binary when enabled.
+        String suDisabledBinaryName = sharedPreferences.getString("su_disabled_binary_name", "su.disabled"); // Declare variable for the name of the su binary when disabled.
+        try { // Try to disable root.
+            Process rootProcess = Runtime.getRuntime().exec("/system/xbin/" + suBinaryName); // Create a shell process with root privileges.
+            DataOutputStream rootStream = new DataOutputStream(rootProcess.getOutputStream()); // Create stream to write commands to the shell process.
+            rootStream.writeBytes("mount -o rw,remount,rw /system\n"); // Send command to re-mount the system partition as read-write.
+            rootStream.writeBytes("mv /system/bin/" + suBinaryName + " /system/bin/" + suDisabledBinaryName + "\n"); // Send command to rename the enabled su binary in bin to the disabled su binary.
+            rootStream.writeBytes("mv /system/xbin/" + suBinaryName + " /system/xbin/" + suDisabledBinaryName + "\n"); // Send command to rename the enabled su binary in xbin to the disabled su binary.
+            rootStream.writeBytes("mount -o ro,remount,ro /system\n"); // Send command to re-mount the system partition as read-only.
+            rootStream.writeBytes("exit\n"); // Send command to exit the root shell.
+            rootStream.flush(); // Get rid of the root shell.
+        } catch (IOException ignored) {} // Watch for IOException errors.
+    }
+
+    private void enableRoot() { // Function to enable root.
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()); // Declare variable for shared preferences.
+        String suBinaryName = sharedPreferences.getString("su_binary_name", "su"); // Declare variable for the name of the su binary when enabled.
+        String suDisabledBinaryName = sharedPreferences.getString("su_disabled_binary_name", "su.disabled"); // Declare variable for the name of the su binary when disabled.
+        try { // Try to enable root.
+            Process rootProcess = Runtime.getRuntime().exec("/system/xbin/" + suDisabledBinaryName); // Create a shell process with root privileges.
+            DataOutputStream rootStream = new DataOutputStream(rootProcess.getOutputStream()); // Create stream to write commands to the shell process.
+            rootStream.writeBytes("mount -o rw,remount,rw /system\n"); // Send command to re-mount the system partition as read-write.
+            rootStream.writeBytes("mv /system/xbin/" + suDisabledBinaryName + " /system/xbin/" + suBinaryName + "\n"); // Send command to rename the disabled su binary in xbin to the enabled su binary.
+            rootStream.writeBytes("mv /system/bin/" + suDisabledBinaryName + " /system/bin/" + suBinaryName + "\n"); // Send command to rename the disabled su binary in bin to the enabled su binary.
+            rootStream.writeBytes("mount -o ro,remount,ro /system\n"); // Send command to re-mount the system partition as read-only.
+            rootStream.writeBytes("exit\n"); // Send command to exit the root shell.
+            rootStream.flush(); // Get rid of the root shell.
+        } catch (IOException ignored) {} // Watch for IOException errors.
+    }
+
+    private final View.OnClickListener disableRootListener = new View.OnClickListener() { // On click listener for button to disable root.
         @Override // Override previous functions.
         public void onClick(View v) { // Function states what to do when the disable root button is clicked.
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()); // Declare variable for shared preferences.
-            String suBinaryName = sharedPreferences.getString("su_binary_name", "su"); // Declare variable for the name of the su binary when enabled.
-            String suDisabledBinaryName = sharedPreferences.getString("su_disabled_binary_name", "su.disabled"); // Declare variable for the name of the su binary when disabled.
             if (rootCheck()) { // Calls root checking functions. Is it safe to continue without errors?
                 if (sharedPreferences.getBoolean("root_enabled", true)) { // Is root enabled?
-                    try { // Try to disable root.
-                        Process rootProcess = Runtime.getRuntime().exec("/system/xbin/" + suBinaryName); // Create a shell process with root privileges.
-                        DataOutputStream rootStream = new DataOutputStream(rootProcess.getOutputStream()); // Create stream to write commands to the shell process.
-                        rootStream.writeBytes("mount -o rw,remount,rw /system\n"); // Send command to re-mount the system partition as read-write.
-                        rootStream.writeBytes("mv /system/bin/" + suBinaryName + " /system/bin/" + suDisabledBinaryName + "\n"); // Send command to rename the enabled su binary in bin to the disabled su binary.
-                        rootStream.writeBytes("mv /system/xbin/" + suBinaryName + " /system/xbin/" + suDisabledBinaryName + "\n"); // Send command to rename the enabled su binary in xbin to the disabled su binary.
-                        rootStream.writeBytes("mount -o ro,remount,ro /system\n"); // Send command to re-mount the system partition as read-only.
-                        rootStream.writeBytes("exit\n"); // Send command to exit the root shell.
-                        rootStream.flush(); // Get rid of the root shell.
-                    } catch (IOException ignored) {} // Watch for IOException errors.
+                    disableRoot(); // Calls function to disable root.
                 }else{ // Root is not enabled.
                     Toast rootAlreadyDisabledToast = Toast.makeText(getApplicationContext(), R.string.root_already_disabled_toast, Toast.LENGTH_SHORT); // Create toast to say root is already disabled.
                     rootAlreadyDisabledToast.show(); // Show toast that root is already disabled.
@@ -98,24 +119,13 @@ public class MainActivity extends AppCompatActivity { // Class for the main acti
         }
     };
 
-    private final View.OnClickListener enableRoot = new View.OnClickListener() { // On click listener for button to enable root.
+    private final View.OnClickListener enableRootListener = new View.OnClickListener() { // On click listener for button to enable root.
         @Override // Override previous functions.
         public void onClick(View v) { // Function states what to do when the enable root button is clicked.
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()); // Declare variable for shared preferences.
-            String suBinaryName = sharedPreferences.getString("su_binary_name", "su"); // Declare variable for the name of the su binary when enabled.
-            String suDisabledBinaryName = sharedPreferences.getString("su_disabled_binary_name", "su.disabled"); // Declare variable for the name of the su binary when disabled.
             if (rootCheck()) { // Call root checking functions. Is it safe to continue without errors?
                 if (!sharedPreferences.getBoolean("root_enabled", true)) { // Is root disabled?
-                    try { // Try to enable root.
-                        Process rootProcess = Runtime.getRuntime().exec("/system/xbin/" + suDisabledBinaryName); // Create a shell process with root privileges.
-                        DataOutputStream rootStream = new DataOutputStream(rootProcess.getOutputStream()); // Create stream to write commands to the shell process.
-                        rootStream.writeBytes("mount -o rw,remount,rw /system\n"); // Send command to re-mount the system partition as read-write.
-                        rootStream.writeBytes("mv /system/xbin/" + suDisabledBinaryName + " /system/xbin/" + suBinaryName + "\n"); // Send command to rename the disabled su binary in xbin to the enabled su binary.
-                        rootStream.writeBytes("mv /system/bin/" + suDisabledBinaryName + " /system/bin/" + suBinaryName + "\n"); // Send command to rename the disabled su binary in bin to the enabled su binary.
-                        rootStream.writeBytes("mount -o ro,remount,ro /system\n"); // Send command to re-mount the system partition as read-only.
-                        rootStream.writeBytes("exit\n"); // Send command to exit the root shell.
-                        rootStream.flush(); // Get rid of the root shell.
-                    } catch (IOException ignored) {} // Watch for IOException errors.
+                    enableRoot(); // Calls function to enable root.
                 }else{ // Root is not disabled.
                     Toast rootAlreadyEnabledToast = Toast.makeText(getApplicationContext(), R.string.root_already_enabled_toast, Toast.LENGTH_SHORT); // Create toast to say root is already enabled.
                     rootAlreadyEnabledToast.show(); // Show toast that root is already enabled.
