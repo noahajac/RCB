@@ -1,6 +1,6 @@
 <resources>
     <!-- App Strings -->
-    <string name="app_name">RCB</string>
+    <string name="app_name" translatable="false">RCB</string>
 
     <!-- Button Strings -->
     <string name="disable_root_button_text">Disable Root</string>
