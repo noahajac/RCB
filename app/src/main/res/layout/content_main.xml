@@ -14,20 +14,20 @@
     tools:showIn="@layout/activity_main">
 
     <Button
-        android:text="Disable Root"
+        android:text="@string/enable_root_button_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="111dp"
-        android:id="@+id/disable_root" />
+        android:id="@+id/enable_root_button"
+        android:layout_below="@+id/disable_root_button"
+        android:layout_alignStart="@+id/disable_root_button"
+        android:layout_marginTop="28dp" />
 
     <Button
-        android:text="Enable Root"
+        android:text="@string/disable_root_button_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/enable_root"
-        android:layout_below="@+id/disable_root"
-        android:layout_alignStart="@+id/disable_root"
-        android:layout_marginTop="28dp" />
+        android:layout_marginTop="111dp"
+        android:id="@+id/disable_root_button"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

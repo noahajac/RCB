@@ -1,29 +1,29 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <Preference
-        android:title="@string/request_root"
+        android:title="@string/request_root_preference_title"
         android:key="request_root" />
 
     <EditTextPreference
-    android:defaultValue="@string/su_binary_name_value"
+    android:defaultValue="su"
     android:inputType="text"
     android:key="su_binary_name"
     android:maxLines="1"
     android:selectAllOnFocus="true"
     android:singleLine="true"
-    android:title="@string/su_binary_name" />
+    android:title="@string/su_binary_name_preference_title" />
 
     <EditTextPreference
-        android:defaultValue="@string/disabled_su_binary_name_value"
+        android:defaultValue="su.disabled"
         android:inputType="text"
         android:key="su_disabled_binary_name"
         android:maxLines="1"
         android:selectAllOnFocus="true"
         android:singleLine="true"
-        android:title="@string/disabled_su_binary_name" />
+        android:title="@string/disabled_su_binary_name_preference_title" />
 
     <Preference
-        android:title="@string/reset_settings"
+        android:title="@string/reset_settings_preference_title"
         android:key="reset_settings" />
 
 </PreferenceScreen>

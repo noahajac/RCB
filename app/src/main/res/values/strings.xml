@@ -1,17 +1,31 @@
 <resources>
-    <!-- General Strings -->
+    <!-- App Strings -->
     <string name="app_name">RCB</string>
-    <string name="action_settings">Settings</string>
-    <string name="title_activity_settings">Settings</string>
 
-    <!-- Strings for Settings-->
-    <string name="pref_header_general">General</string>
-    <string name="request_root">Request Root Access</string>
-    <string name="su_binary_name">SU Binary Name</string>
-    <string name="su_binary_name_value">su</string>
-    <string name="disabled_su_binary_name">Disabled SU Binary Name</string>
-    <string name="disabled_su_binary_name_value">su.disabled</string>
-    <string name="reset_settings">Reset Settings to Default</string>
+    <!-- Button Strings -->
+    <string name="disable_root_button_text">Disable Root</string>
+    <string name="enable_root_button_text">Enable Root</string>
+
+    <!-- Preferences Strings -->
+    <string name="settings_name">Settings</string>
+    <string name="general_preference_header">General</string>
+    <string name="request_root_preference_title">Request Root Access</string>
+    <string name="request_root_preference_true_summary">Has Root Access</string>
+    <string name="request_root_preference_false_summary">Does Not Have Root Access</string>
+    <string name="su_binary_name_preference_title">SU Binary Name</string>
+    <string name="disabled_su_binary_name_preference_title">Disabled SU Binary Name</string>
+    <string name="reset_settings_preference_title">Reset Settings to Default</string>
+
+    <!-- Toast Strings -->
+    <string name="root_already_disabled_toast">Root Already Disabled</string>
+    <string name="root_already_enabled_toast">Root Already Enabled</string>
+    <string name="reset_settings_toast">Settings Reset to Default</string>
+    <string name="request_root_toast_successful">Root Request Accepted</string>
+    <string name="request_root_toast_unsuccessful_denied">Root Request Denied</string>
+    <string name="request_root_toast_unsuccessful_error">Error</string>
+    <string name="request_root_toast_unsuccessful_cannot_find">Unable to Find SU</string>
+
+    <!-- Dialog Strings -->
     <string name="reset_settings_dialog_message">Are you sure you want to reset settings to default?</string>
     <string name="reset_settings_dialog_title">Reset Settings to Default</string>
     <string name="reset_settings_dialog_positive_button">Reset</string>

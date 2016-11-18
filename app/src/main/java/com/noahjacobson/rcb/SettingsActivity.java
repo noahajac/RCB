@@ -7,7 +7,6 @@ import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -16,7 +15,6 @@ import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.MultiSelectListPreference;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceGroup;
 import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
@@ -28,259 +26,189 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * A {@link PreferenceActivity} that presents a set of application settings. On
- * handset devices, settings are presented as a single list. On tablets,
- * settings are split by category, with category headers shown to the left of
- * the list of settings.
- * <p>
- * See <a href="http://developer.android.com/design/patterns/settings.html">
- * Android Design: Settings</a> for design guidelines and the <a
- * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
- * API Guide</a> for more information on developing a Settings UI.
- */
-public class SettingsActivity extends AppCompatPreferenceActivity {
-    /**
-     * A preference value change listener that updates the preference's summary
-     * to reflect its new value.
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
+public class SettingsActivity extends AppCompatPreferenceActivity { // Class for the settings activity.
+
+    @Override // Override previous functions.
+    public boolean onOptionsItemSelected(MenuItem item) { // Function to listen to action bar item click.
+        switch (item.getItemId()) { // Find the item selected.
+            case android.R.id.home: // Provides proper up navigation.
+                finish(); // Provides proper up navigation.
+                return true; // Returns true to previous function.
         }
-        return false;
+        return false; // Returns false to previous function.
     }
 
-    /**
-     * Helper method to determine if the device has an extra-large screen. For
-     * example, 10" tablets are extra-large.
-     */
-    private static boolean isXLargeTablet(Context context) {
-        return (context.getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
+    private static boolean isXLargeTablet(Context context) { // Function to detect if device's screen is extra large.
+        return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE; // Returns to previous function.
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setupActionBar();
+    @Override // Override previous functions.
+    protected void onCreate(Bundle savedInstanceState) { // Function to run on start of the activity.
+        super.onCreate(savedInstanceState); // Run Android API code.
+        setupActionBar(); // Call the function to setup the action bar.
     }
 
-    /**
-     * Set up the {@link android.app.ActionBar}, if the API is available.
-     */
-    private void setupActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Settings");
-        if (actionBar != null) {
-            // Show the Up button in the action bar.
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+    private void setupActionBar() { // Function to setup the action bar.
+        ActionBar actionBar = getSupportActionBar(); // Declare variable for the action bar.
+        actionBar.setTitle(R.string.settings_name); // Set the activity title on the action bar.
+        actionBar.setDisplayHomeAsUpEnabled(true); // Show the up button in the action bar.
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onIsMultiPane() {
-        return isXLargeTablet(this);
+    @Override // Override previous functions.
+    public boolean onIsMultiPane() { // Function to determine if activity should run in multi-pane mode.
+        return isXLargeTablet(this); // Return to the previous function/
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public void onBuildHeaders(List<Header> target) {
-        loadHeadersFromResource(R.xml.pref_headers, target);
+    @Override // Override previous functions.
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB) // Set the target API to Honeycomb.
+    public void onBuildHeaders(List<Header> target) { // Function to get preference headers.
+        loadHeadersFromResource(R.xml.pref_headers, target); // Get preference headers.
     }
 
-    /**
-     * This method stops fragment injection in malicious applications.
-     * Make sure to deny any unknown fragments here.
-     */
-    protected boolean isValidFragment(String fragmentName) {
-        return PreferenceFragment.class.getName().equals(fragmentName)
-                || GeneralPreferenceFragment.class.getName().equals(fragmentName);
+    protected boolean isValidFragment(String fragmentName) { // Function to stop malicious injection.
+        return PreferenceFragment.class.getName().equals(fragmentName) || GeneralPreferenceFragment.class.getName().equals(fragmentName); // Return to previous function.
     }
-   public static class ResetSettingsDialogFragment extends DialogFragment {
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // Use the Builder class for convenient dialog construction
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage(R.string.reset_settings_dialog_message)
-                    .setTitle(R.string.reset_settings_dialog_title)
-                    .setPositiveButton(R.string.reset_settings_dialog_positive_button, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                            SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
-                            sharedPreferencesEditor.clear();
-                            sharedPreferencesEditor.commit();
-                            getActivity().finish();
-                            Toast settingsResetToast = Toast.makeText(getActivity().getApplication(), "Settings Reset to Default", Toast.LENGTH_SHORT);
-                            settingsResetToast.show();
-                        }
-                    })
-                    .setNegativeButton(R.string.reset_settings_dialog_negative_button, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
+
+   public static class ResetSettingsDialogFragment extends DialogFragment { // Function for the confirmation dialog box to reset settings.
+        @Override  // Override previous functions.
+        public Dialog onCreateDialog(Bundle savedInstanceState) { // Function to run on the creation of the dialog box.
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()); // Create new dialog box builder.
+            builder.setMessage(R.string.reset_settings_dialog_message); // Set the message for the dialog box.
+            builder.setTitle(R.string.reset_settings_dialog_title); // Set the title for the dialog box.
+            builder.setPositiveButton(R.string.reset_settings_dialog_positive_button, new DialogInterface.OnClickListener() { // Set the positive button for the dialog box.
+                        public void onClick(DialogInterface dialog, int id) { // Function to run when the positive button is clicked.
+                            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity()); // Declare variable for shared preferences.
+                            SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit(); // Declare variable for shared preferences editor.
+                            sharedPreferencesEditor.clear(); // Clear the saved preferences to default.
+                            sharedPreferencesEditor.apply(); // Save changes to preferences.
+                            getActivity().finish(); // Close settings activity.
+                            Toast resetSettingsToast = Toast.makeText(getActivity().getApplication(), R.string.reset_settings_toast, Toast.LENGTH_SHORT); // Create toast to say the settings were reset to default.
+                            resetSettingsToast.show(); // Show toast to say the settings were reset to default.
                         }
                     });
-            // Create the AlertDialog object and return it
-            return builder.create();
+            builder.setNegativeButton(R.string.reset_settings_dialog_negative_button, new DialogInterface.OnClickListener() { // Set the negative button for the dialog box
+                        public void onClick(DialogInterface dialog, int id) { // Function to run when the negative button is clicked.
+                            // Do nothing.
+                        }
+                    });
+            return builder.create(); // Return to the previous function.
         }
     }
-    /**
-     * This fragment shows general preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class GeneralPreferenceFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_general);
-            PreferenceManager.setDefaultValues(getContext(), R.xml.pref_general,
-                    false);
-            final Preference requestRoot = (Preference)findPreference("request_root");
-            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            if(sharedPreferences.getBoolean("rootAccess", true)) {
-                requestRoot.setSummary("Has Root Access");
-            }else if(sharedPreferences.getBoolean("rootAccess", false)) {
-                requestRoot.setSummary("Does Not Have Root Access");
+    public static class GeneralPreferenceFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener { // Class for the preferences fragment.
+        @Override // Override previous functions.
+        public void onCreate(Bundle savedInstanceState) { // Function to run on creation of the fragment.
+            super.onCreate(savedInstanceState); // Run Android API code.
+            addPreferencesFromResource(R.xml.pref_general); // Add the preferences to the fragment.
+            PreferenceManager.setDefaultValues(getContext(), R.xml.pref_general, false); // Set the default values for the preferences.
+            final Preference requestRoot = findPreference("request_root"); // Declare variable for the request root access button.
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity()); // Declare variable for shared preferences.
+            if(sharedPreferences.getBoolean("root_access", false)) { // Does RCB have root access?
+                requestRoot.setSummary(R.string.request_root_preference_true_summary); // Set the summary to display that RCB has root access.
+            }else if(!sharedPreferences.getBoolean("root_access", false)) { // Does RCB not have root access?
+                requestRoot.setSummary(R.string.request_root_preference_false_summary); // Set the summary to display that RCB does not have root access.
             }
-            initSummary(getPreferenceScreen());
+            initSummary(getPreferenceScreen()); // Call the function to initiate the preference's summaries.
 
-            requestRoot.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                    SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
-                    try {
-                        Process rootProcess = Runtime.getRuntime().exec("/system/xbin/su");
-                        DataOutputStream rootStream = new DataOutputStream(rootProcess.getOutputStream());
-
-                        // Close the terminal
-                        rootStream.writeBytes("exit\n");
-                        rootStream.flush();
+            requestRoot.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() { // Set the on click listener for the request root button.
+                @Override // Override previous functions.
+                public boolean onPreferenceClick(Preference preference) { // Function to run when the request root button is clicked.
+                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext()); // Declare variable for shared preferences.
+                    SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit(); // Declare variable for shared preferences editor.
+                    String suBinaryName = sharedPreferences.getString("su_binary_name", "su"); // Declare variable for the name of the su binary when enabled.
+                    try { // Try to request root access.
+                        Process rootProcess = Runtime.getRuntime().exec("/system/xbin/" + suBinaryName); // Create a shell process with root privileges.
+                        DataOutputStream rootStream = new DataOutputStream(rootProcess.getOutputStream()); // Create stream to write commands to the shell process.
+                        rootStream.writeBytes("exit\n"); // Send command to exit the root shell.
+                        rootStream.flush(); // Get rid of the root shell.
                         try {
-                            rootProcess.waitFor();
-                            if (rootProcess.exitValue() == 0) {
-                                sharedPreferencesEditor.putBoolean("rootAccess", true);
-                                sharedPreferencesEditor.commit();
-                                requestRoot.setSummary("Has Root Access");
-                                Toast rootCheckSuccessfulToast = Toast.makeText(getActivity().getApplication(), "Root Request Accepted", Toast.LENGTH_SHORT);
-                                rootCheckSuccessfulToast.show();
+                            rootProcess.waitFor(); // Wait for the shell process.
+                            if (rootProcess.exitValue() == 0) { // Was the root request accepted?
+                                sharedPreferencesEditor.putBoolean("root_access", true); // Set preference to state that RCB has root access.
+                                sharedPreferencesEditor.apply(); //  // Save changes to preferences.
+                                requestRoot.setSummary(R.string.request_root_preference_true_summary); // Set the summary for the request root button to state that RCB has root access.
+                                Toast rootCheckSuccessfulToast = Toast.makeText(getActivity().getApplication(), R.string.request_root_toast_successful, Toast.LENGTH_SHORT); // Create toast to show that the root request was accepted.
+                                rootCheckSuccessfulToast.show(); // Show toast to show that the root request was accepted.
                             }
-                            else {
-                                sharedPreferencesEditor.putBoolean("rootAccess", false);
-                                sharedPreferencesEditor.commit();
-                                requestRoot.setSummary("Does Not Have Root Access");
-                                Toast rootCheckUnsuccessfulToast = Toast.makeText(getActivity().getApplication(), "Root Request Denied", Toast.LENGTH_SHORT);
-                                rootCheckUnsuccessfulToast.show();
+                            else { // The root request was denied.
+                                sharedPreferencesEditor.putBoolean("root_access", false); // Set preference to state that RCB does not have root access.
+                                sharedPreferencesEditor.commit(); // Save changes to preferences.
+                                requestRoot.setSummary(R.string.request_root_preference_false_summary); // Set the summary for the root request button to state that RCB does not have root access.
+                                Toast rootCheckUnsuccessfulToast = Toast.makeText(getActivity().getApplication(), R.string.request_root_toast_unsuccessful_denied, Toast.LENGTH_SHORT); // Create toast to show that the root request was denied.
+                                rootCheckUnsuccessfulToast.show(); // Show toast to show that the root request was denied.
                             }
-                        } catch (InterruptedException e) {
-                            sharedPreferencesEditor.putBoolean("rootAccess", false);
-                            sharedPreferencesEditor.commit();
-                            requestRoot.setSummary("Does Not Have Root Access");
-                            Toast rootCheckUnsuccessfulToast = Toast.makeText(getActivity().getApplication(), "Error: " + e, Toast.LENGTH_SHORT);
-                            rootCheckUnsuccessfulToast.show();
+                        } catch (InterruptedException e) { // Watch for InterruptedException errors.
+                            sharedPreferencesEditor.putBoolean("root_access", false); // Set preference to state that RCB does not have root access.
+                            sharedPreferencesEditor.commit(); // Save changes to preferences.
+                            requestRoot.setSummary(R.string.request_root_preference_false_summary); // Set the summary for the root request button to state that RCB does not have root access.
+                            Toast rootCheckUnsuccessfulToast = Toast.makeText(getActivity().getApplication(), R.string.request_root_toast_unsuccessful_error + ": " + e, Toast.LENGTH_SHORT); // Create toast to show that the root request had an error.
+                            rootCheckUnsuccessfulToast.show(); // Create toast to show that the root request had an error.
                         }
-                    } catch (IOException e) {
-                        sharedPreferencesEditor.putBoolean("rootAccess", false);
-                        sharedPreferencesEditor.commit();
-                        requestRoot.setSummary("Does Not Have Root Access");
-                        Toast rootCheckUnsuccessfulToast = Toast.makeText(getActivity().getApplication(), "Unable to Find SU", Toast.LENGTH_SHORT);
-                        rootCheckUnsuccessfulToast.show();
+                    } catch (IOException e) { // Watch for IOException errors showing that the su binary could not be found.
+                        sharedPreferencesEditor.putBoolean("root_access", false); // Set preference to state that RCB does not have root access.
+                        sharedPreferencesEditor.commit(); // Save changes to preferences.
+                        requestRoot.setSummary(R.string.request_root_preference_false_summary); // Set the summary for the root request button to state that RCB does not have root access.
+                        Toast rootCheckUnsuccessfulToast = Toast.makeText(getActivity().getApplication(), R.string.request_root_toast_unsuccessful_cannot_find, Toast.LENGTH_SHORT); // Create toast to show that the root request was unable to find the su binary.
+                        rootCheckUnsuccessfulToast.show(); // Create toast to show that the root request was unable to find the su binary.
                     }
-                    return true;
+                    return true; // Return true to previous function.
                 }
             });
 
-            Preference resetSettings = (Preference)findPreference("reset_settings");
-            resetSettings.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    FragmentManager fragmentManager = getActivity().getFragmentManager();
-                    DialogFragment resetPopup = new ResetSettingsDialogFragment();
-                    resetPopup.show(fragmentManager, "settingsResetDialog");
-                    return true;
+            Preference resetSettings = findPreference("reset_settings"); // Declare variable for the reset settings button.
+            resetSettings.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() { // Set the on click listener for the reset settings button.
+                @Override // Override previous functions.
+                public boolean onPreferenceClick(Preference preference) { // Function to run when the reset settings button is clicked.
+                    FragmentManager fragmentManager = getActivity().getFragmentManager(); // Declare variable for the fragment manager.
+                    DialogFragment resetPopup = new ResetSettingsDialogFragment(); // Create new dialog box to confirm that the user wants to reset settings.
+                    resetPopup.show(fragmentManager, "settingsResetDialog"); // Show dialog box to confirm that the user wants to reset settings.
+                    return true; // Return true to previous function.
                 }
             });
         }
 
-        @Override
-        public void onResume() {
-            super.onResume();
-            // Set up a listener whenever a key changes
-            getPreferenceScreen().getSharedPreferences()
-                    .registerOnSharedPreferenceChangeListener(this);
+        @Override // Override previous functions.
+        public void onResume() { // Function to run when the fragment is resumed.
+            super.onResume(); // Run Android API code.
+            getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this); // Create a listener for when a preference changes.
         }
 
-        @Override
-        public void onPause() {
-            super.onPause();
-            // Unregister the listener whenever a key changes
-            getPreferenceScreen().getSharedPreferences()
-                    .unregisterOnSharedPreferenceChangeListener(this);
+        @Override // Override previous functions.
+        public void onPause() { // Function to run when the fragment is paused.
+            super.onPause(); // Run Android API code.
+            getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this); // Get rid of the listener for when a preference changes.
         }
 
-        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-                                              String key) {
-            updatePrefSummary(findPreference(key));
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) { // Function to run when a preference is changed.
+            updatePrefSummary(findPreference(key)); // Call the function to update the summary of the preference.
         }
 
-        private void initSummary(Preference p) {
-            if (p instanceof PreferenceGroup) {
-                PreferenceGroup pGrp = (PreferenceGroup) p;
-                for (int i = 0; i < pGrp.getPreferenceCount(); i++) {
-                    initSummary(pGrp.getPreference(i));
+        private void initSummary(Preference p) { // Function to run when the fragment is first created to initiate the summaries.
+            if (p instanceof PreferenceGroup) { // Is the preference part of this fragment?
+                PreferenceGroup pGrp = (PreferenceGroup) p; // Declare variable for the preference.
+                for (int i = 0; i < pGrp.getPreferenceCount(); i++) { // Loop until there are no more preference summaries left to initiate.
+                    initSummary(pGrp.getPreference(i)); // Initiate the remaining preference summaries.
                 }
-            } else {
-                updatePrefSummary(p);
+            } else { // Preference isn't part of the fragment.
+                updatePrefSummary(p); // Call the function to update the summary of a preference to its current value.
             }
         }
 
-        private void updatePrefSummary(Preference p) {
-            if (p instanceof ListPreference) {
-                ListPreference listPref = (ListPreference) p;
-                p.setSummary(listPref.getEntry());
+        @SuppressWarnings("ConstantConditions")
+        private void updatePrefSummary(Preference p) { // Function to update the summary of a preference to its current value.
+            if (p instanceof ListPreference) { // Is the preference a list preference?
+                ListPreference listPref = (ListPreference) p; // Declare variable for the preference.
+                p.setSummary(listPref.getEntry()); // Set the summary of the preference to its current value.
             }
-            if (p instanceof EditTextPreference) {
-                EditTextPreference editTextPref = (EditTextPreference) p;
-                if (p.getTitle().toString().toLowerCase().contains("password"))
-                {
-                    p.setSummary("******");
-                } else {
-                    p.setSummary(editTextPref.getText());
-                }
+            if (p instanceof EditTextPreference) { // Is the preference a text preference?
+                EditTextPreference editTextPref = (EditTextPreference) p; // Declare variable for the preference.
+                p.setSummary(editTextPref.getText()); // Set the summary of the preference to its current value.
             }
-            if (p instanceof MultiSelectListPreference) {
-                EditTextPreference editTextPref = (EditTextPreference) p;
-                p.setSummary(editTextPref.getText());
+            if (p instanceof MultiSelectListPreference) { // Is the preference a multiple selection preference?
+                EditTextPreference editTextPref = (EditTextPreference) p; // Declare variable for the preference.
+                p.setSummary(editTextPref.getText()); // Set the summary of the preference to its current value.
             }
-        }
-
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-            // bindPreferenceSummaryToValue(findPreference("example_text"));
-            // bindPreferenceSummaryToValue(findPreference("example_list"));
-
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), SettingsActivity.class));
-                return true;
-            }
-            return super.onOptionsItemSelected(item);
         }
     }
-
-
 }

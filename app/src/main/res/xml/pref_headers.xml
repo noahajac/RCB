@@ -4,7 +4,6 @@
 
     <header
         android:fragment="com.noahjacobson.rcb.SettingsActivity$GeneralPreferenceFragment"
-        android:icon="@drawable/ic_info_black_24dp"
-        android:title="@string/pref_header_general" />
+        android:title="@string/general_preference_header" />
 
 </preference-headers>
