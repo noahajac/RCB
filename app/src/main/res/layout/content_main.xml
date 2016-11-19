@@ -30,4 +30,14 @@
         android:id="@+id/disable_root_button"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
+
+    <Button
+        android:text="@string/toggle_root_button_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/toggle_root_button"
+        android:layout_centerVertical="true"
+        android:layout_alignEnd="@+id/enable_root_button"
+        android:layout_below="@+id/enable_root_button"
+        android:layout_marginTop="28dp" />
 </RelativeLayout>

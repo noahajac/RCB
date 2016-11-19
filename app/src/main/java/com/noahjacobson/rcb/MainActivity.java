@@ -26,8 +26,10 @@ public class MainActivity extends AppCompatActivity { // Class for the main acti
         setSupportActionBar(toolbar); // Set toolbar as the action bar.
         Button disableRootButton = (Button) findViewById(R.id.disable_root_button); // Find button to disable root by id.
         Button enableRootButton = (Button) findViewById(R.id.enable_root_button); // Find button to enable root by id.
+        Button toggleRootButton = (Button) findViewById(R.id.toggle_root_button); // Find button to toggle root by id.
         disableRootButton.setOnClickListener(disableRootListener); // Set on click listener for disable root button.
         enableRootButton.setOnClickListener(enableRootListener); // Set on click listener for enable root button.
+        toggleRootButton.setOnClickListener(toggleRootListener); // Set on click listener for toggle root button.
     }
 
     private void rootStatusCheck() { // Function to check if root is currently enabled or disabled.
@@ -132,6 +134,20 @@ public class MainActivity extends AppCompatActivity { // Class for the main acti
                 }
             }
         }
+    };
+
+    private final View.OnClickListener toggleRootListener = new View.OnClickListener() { // Function states what to do when the toggle root button is clicked.
+      @Override // Override previous functions.
+      public void onClick(View v) { // Function states what to do when toggle root button is checked.
+          SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()); // Declare variable for shared preferences.
+          if (rootCheck()) { // Call root checking functions. Is it safe to continue without errors?
+              if (sharedPreferences.getBoolean("root_enabled", true)) { // Is root enabled?
+                  disableRoot(); // Calls function to disable root.
+              }else if (!sharedPreferences.getBoolean("root_enabled", true)) { // If root is not enabled, is root disabled?
+                  enableRoot(); // Calls function to enable root.
+              }
+          }
+      }
     };
 
     @Override // Override previous functions.

@@ -5,6 +5,7 @@
     <!-- Button Strings -->
     <string name="disable_root_button_text">Disable Root</string>
     <string name="enable_root_button_text">Enable Root</string>
+    <string name="toggle_root_button_text">Toggle Root</string>
 
     <!-- Preferences Strings -->
     <string name="settings_name">Settings</string>
