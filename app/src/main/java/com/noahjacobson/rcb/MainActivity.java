@@ -2,6 +2,7 @@ package com.noahjacobson.rcb;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -40,8 +41,10 @@ public class MainActivity extends AppCompatActivity { // Class for the main acti
         rootStatusCheck(); // Call the function rootStatusCheck to check if root is currently enabled or disabled.
         if (sharedPreferences.getBoolean("root_enabled", true)) { // Is root enabled?
             rootStatusText.setText(R.string.root_status_text_enabled); // Set the root status indicator to show that root is enabled.
+            rootStatusText.setTextColor(Color.rgb(0,175,0)); // Set color of root status indicator to green.
         }else if (!sharedPreferences.getBoolean("root_enabled", true)) { // Root is not enabled, is it disabled?
             rootStatusText.setText(R.string.root_status_text_disabled); // Set the root status indicator to show that root is disabled.
+            rootStatusText.setTextColor(Color.rgb(250,0,0)); // Set color of root status indicator to red.
         }
     }
 
