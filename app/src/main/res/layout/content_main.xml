@@ -13,31 +13,45 @@
     tools:context="com.noahjacobson.rcb.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <Button
-        android:text="@string/enable_root_button_text"
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/enable_root_button"
-        android:layout_below="@+id/disable_root_button"
-        android:layout_alignStart="@+id/disable_root_button"
-        android:layout_marginTop="28dp" />
+        android:layout_marginTop="50dp"
+        android:id="@+id/root_status_text"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:textSize="20sp" />
 
     <Button
         android:text="@string/disable_root_button_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="111dp"
+        android:layout_marginTop="100dp"
         android:id="@+id/disable_root_button"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/root_status_text"
+        />
+
+    <Button
+        android:text="@string/enable_root_button_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:id="@+id/enable_root_button"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/disable_root_button"
+        android:layout_alignStart="@+id/disable_root_button"
+        android:layout_alignEnd="@id/disable_root_button"/>
 
     <Button
         android:text="@string/toggle_root_button_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:id="@+id/toggle_root_button"
-        android:layout_centerVertical="true"
-        android:layout_alignEnd="@+id/enable_root_button"
+        android:layout_centerHorizontal="true"
         android:layout_below="@+id/enable_root_button"
-        android:layout_marginTop="28dp" />
+        android:layout_alignStart="@id/enable_root_button"
+        android:layout_alignEnd="@+id/enable_root_button" />
+
 </RelativeLayout>

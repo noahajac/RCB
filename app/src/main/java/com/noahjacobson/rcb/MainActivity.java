@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.DataOutputStream;
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity { // Class for the main acti
         setContentView(R.layout.activity_main); // Set view to the main layout via its id.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar); // Find toolbar by id.
         setSupportActionBar(toolbar); // Set toolbar as the action bar.
+        updateRootStatusText(); // Call function to update the root status indicator.
         Button disableRootButton = (Button) findViewById(R.id.disable_root_button); // Find button to disable root by id.
         Button enableRootButton = (Button) findViewById(R.id.enable_root_button); // Find button to enable root by id.
         Button toggleRootButton = (Button) findViewById(R.id.toggle_root_button); // Find button to toggle root by id.
@@ -32,29 +34,14 @@ public class MainActivity extends AppCompatActivity { // Class for the main acti
         toggleRootButton.setOnClickListener(toggleRootListener); // Set on click listener for toggle root button.
     }
 
-    private void rootStatusCheck() { // Function to check if root is currently enabled or disabled.
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()); // Declares variable for shared preferences.
-        SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit(); // Declare variable for shared preferences editor.
-        String suBinaryName = sharedPreferences.getString("su_binary_name", "su"); // Declare variable for the name of the su binary when enabled.
-        String suDisabledBinaryName = sharedPreferences.getString("su_disabled_binary_name", "su.disabled"); // Declare variable for the name of the su binary when disabled.
-        File suBinaryEnabled = new File("/system/xbin/" + suBinaryName); // Declare variable for the enabled su binary and its path.
-        File suBinaryDisabled = new File("/system/xbin/" + suDisabledBinaryName); // Declare variable for the disabled su binary and its path.
-        if (suBinaryEnabled.exists()) { // Does the enabled su binary exist?
-            sharedPreferencesEditor.putBoolean("root_enabled", true); // Set preference that states root is currently enabled.
-            sharedPreferencesEditor.apply(); // Save changes to preferences.
-        }else if(suBinaryDisabled.exists()) { // If the enabled su binary does not exist, does the disabled su binary exist?
-            sharedPreferencesEditor.putBoolean("root_enabled", false); // Set preference that states root is currently disabled.
-            sharedPreferencesEditor.apply(); // Save changes to preferences.
-        }
-    }
-
-    private boolean rootAccessCheck() { // Function to check if RCB has root access.
+    private void updateRootStatusText() { // Function to update the root status indicator.
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()); // Declare variable for shared preferences.
-        if(sharedPreferences.getBoolean("root_access", false)) { // Does the saved preference state that RCB has root access?
-            rootStatusCheck(); // Call the function rootStatusCheck to check if root is currently enabled or disabled.
-            return true; // Tell previous function rootCheck that RCB has root access.
-        }else{ // The saved preference states that RCB does not have root access.
-            return false; // Tell previous function rootCheck that RCB does not have root access.
+        TextView rootStatusText = (TextView) findViewById(R.id.root_status_text); // Find text that states the current root status by id.
+        rootStatusCheck(); // Call the function rootStatusCheck to check if root is currently enabled or disabled.
+        if (sharedPreferences.getBoolean("root_enabled", true)) { // Is root enabled?
+            rootStatusText.setText(R.string.root_status_text_enabled); // Set the root status indicator to show that root is enabled.
+        }else if (!sharedPreferences.getBoolean("root_enabled", true)) { // Root is not enabled, is it disabled?
+            rootStatusText.setText(R.string.root_status_text_disabled); // Set the root status indicator to show that root is disabled.
         }
     }
 
@@ -74,6 +61,32 @@ public class MainActivity extends AppCompatActivity { // Class for the main acti
         return (suBinaryEnabledFound || suBinaryDisabledFound) && rootAccessCheck(); // Tell the previous function weather it's safe to check if RCB has root access.
     }
 
+    private boolean rootAccessCheck() { // Function to check if RCB has root access.
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()); // Declare variable for shared preferences.
+        if(sharedPreferences.getBoolean("root_access", false)) { // Does the saved preference state that RCB has root access?
+            rootStatusCheck(); // Call the function rootStatusCheck to check if root is currently enabled or disabled.
+            return true; // Tell previous function rootCheck that RCB has root access.
+        }else{ // The saved preference states that RCB does not have root access.
+            return false; // Tell previous function rootCheck that RCB does not have root access.
+        }
+    }
+
+    private void rootStatusCheck() { // Function to check if root is currently enabled or disabled.
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()); // Declares variable for shared preferences.
+        SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit(); // Declare variable for shared preferences editor.
+        String suBinaryName = sharedPreferences.getString("su_binary_name", "su"); // Declare variable for the name of the su binary when enabled.
+        String suDisabledBinaryName = sharedPreferences.getString("su_disabled_binary_name", "su.disabled"); // Declare variable for the name of the su binary when disabled.
+        File suBinaryEnabled = new File("/system/xbin/" + suBinaryName); // Declare variable for the enabled su binary and its path.
+        File suBinaryDisabled = new File("/system/xbin/" + suDisabledBinaryName); // Declare variable for the disabled su binary and its path.
+        if (suBinaryEnabled.exists()) { // Does the enabled su binary exist?
+            sharedPreferencesEditor.putBoolean("root_enabled", true); // Set preference that states root is currently enabled.
+            sharedPreferencesEditor.apply(); // Save changes to preferences.
+        }else if(suBinaryDisabled.exists()) { // If the enabled su binary does not exist, does the disabled su binary exist?
+            sharedPreferencesEditor.putBoolean("root_enabled", false); // Set preference that states root is currently disabled.
+            sharedPreferencesEditor.apply(); // Save changes to preferences.
+        }
+    }
+
     private void disableRoot() { // Function to disable root.
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()); // Declare variable for shared preferences.
         String suBinaryName = sharedPreferences.getString("su_binary_name", "su"); // Declare variable for the name of the su binary when enabled.
@@ -87,7 +100,11 @@ public class MainActivity extends AppCompatActivity { // Class for the main acti
             rootStream.writeBytes("mount -o ro,remount,ro /system\n"); // Send command to re-mount the system partition as read-only.
             rootStream.writeBytes("exit\n"); // Send command to exit the root shell.
             rootStream.flush(); // Get rid of the root shell.
-        } catch (IOException ignored) {} // Watch for IOException errors.
+            rootProcess.waitFor(); // Wait for root to be disabled to continue so the root status indicator is correct.
+        } catch (IOException | InterruptedException ignored) { // Watch for IOException and InterruptedException errors.
+        } finally{ // When finished, do the following code.
+          updateRootStatusText(); // Call function to the update root status indicator.
+        }
     }
 
     private void enableRoot() { // Function to enable root.
@@ -103,7 +120,11 @@ public class MainActivity extends AppCompatActivity { // Class for the main acti
             rootStream.writeBytes("mount -o ro,remount,ro /system\n"); // Send command to re-mount the system partition as read-only.
             rootStream.writeBytes("exit\n"); // Send command to exit the root shell.
             rootStream.flush(); // Get rid of the root shell.
-        } catch (IOException ignored) {} // Watch for IOException errors.
+            rootProcess.waitFor(); // Wait for root to be enabled to continue so the root status indicator is correct.
+        } catch (IOException | InterruptedException ignored) { // Watch for IOException and InterruptedException errors.
+        } finally { // When finished, do the following code.
+            updateRootStatusText(); // Call function to the update root status indicator.
+        }
     }
 
     private final View.OnClickListener disableRootListener = new View.OnClickListener() { // On click listener for button to disable root.

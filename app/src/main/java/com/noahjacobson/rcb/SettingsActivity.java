@@ -69,8 +69,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity { // Class for
         return PreferenceFragment.class.getName().equals(fragmentName) || GeneralPreferenceFragment.class.getName().equals(fragmentName); // Return to previous function.
     }
 
-   public static class ResetSettingsDialogFragment extends DialogFragment { // Function for the confirmation dialog box to reset settings.
-        @Override  // Override previous functions.
+    public static class ResetSettingsDialogFragment extends DialogFragment { // Function for the confirmation dialog box to reset settings.
+        @Override // Override previous functions.
         public Dialog onCreateDialog(Bundle savedInstanceState) { // Function to run on the creation of the dialog box.
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()); // Create new dialog box builder.
             builder.setMessage(R.string.reset_settings_dialog_message); // Set the message for the dialog box.
